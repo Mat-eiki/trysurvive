@@ -2,7 +2,7 @@ import pygame
 import math
 
 class Projetil:
-    def __init__(self, x, y, alvo_x, alvo_y, velocidade=10):
+    def __init__(self, x, y, alvo_x, alvo_y, velocidade=20):
         self.pos = pygame.Vector2(x, y)
         direcao = pygame.Vector2(alvo_x - x, alvo_y - y)
         if direcao.length() != 0:

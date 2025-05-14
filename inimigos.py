@@ -6,22 +6,24 @@ class Inimigo:
         self.dano = dano
         self.velocidade = velocidade
         self.image = pygame.image.load(imagem_path).convert_alpha()
-        self.rect = self.image.get_rect(center=(x, y))
+        self.pos = pygame.Vector2(x, y)
+        self.rect = self.image.get_rect(center=self.pos)
+
 
     def mover_em_direcao(self, alvo):
-        dx = alvo[0] - self.rect.centerx
-        dy = alvo[1] - self.rect.centery
-        distancia = max((dx ** 2 + dy ** 2) ** 0.5, 1)
-        self.rect.x += self.velocidade * dx / distancia
-        self.rect.y += self.velocidade * dy / distancia
-
+        direcao = pygame.Vector2(alvo[0] - self.pos.x, alvo[1] - self.pos.y)
+        if direcao.length() != 0:
+            direcao = direcao.normalize()
+        self.pos += direcao * self.velocidade
+        self.rect.center = (int(self.pos.x), int(self.pos.y))
+        
     def desenhar(self, tela):
         tela.blit(self.image, self.rect)
 
 # Tipos de zumbis com suas respectivas imagens
 class ZumbiNormal(Inimigo):
     def __init__(self, x, y):
-        super().__init__(x, y, vida=50, dano=10, velocidade=1, imagem_path="zumbi_normal.png")
+        super().__init__(x, y, vida=50, dano=10, velocidade=1.5, imagem_path="zumbi_normal.png")
 
 class ZumbiRapido(Inimigo):
     def __init__(self, x, y):
@@ -29,7 +31,7 @@ class ZumbiRapido(Inimigo):
 
 class ZumbiTank(Inimigo):
     def __init__(self, x, y):
-        super().__init__(x, y, vida=150, dano=20, velocidade=0.5, imagem_path="zumbi_tank.png")
+        super().__init__(x, y, vida=150, dano=20, velocidade=1, imagem_path="zumbi_tank.png")
 
 class ZumbiBoss1(Inimigo):
     def __init__(self, x, y):

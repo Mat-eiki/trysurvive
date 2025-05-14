@@ -1,9 +1,7 @@
 import pygame
 import sys
 from player import Player
-
-# Importa o player passando a poss
-jogador = Player(650, 700)
+from inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2, ZumbiBoss3
 
 # Inicializa o Pygame
 pygame.init()
@@ -18,11 +16,23 @@ pygame.display.set_caption("Trysurvive")
 background = pygame.image.load("background.png")
 
 # Define uma barreira
-barreira = pygame.Rect(585, 350, 235, 200)  # x, y, largura, altura
+barreira = pygame.Rect(585, 350, 235, 200)
 
-# Define o relógio para controlar o FPS (frames por segundo)
+# Cria o jogador
+jogador = Player(650, 700)
+
+# Cria inimigos
+inimigos = [
+    ZumbiNormal(200, 100),
+    ZumbiRapido(400, 50),
+    ZumbiTank(800, 200),
+    ZumbiBoss1(1000, 100),
+    ZumbiBoss2(1300, 400),
+    ZumbiBoss3(300, 800)
+]
+
+# Define o relógio
 clock = pygame.time.Clock()
-
 
 # Loop principal do jogo
 while True:
@@ -31,12 +41,17 @@ while True:
             pygame.quit()
             sys.exit()
 
+    # Entrada do teclado e mouse
     teclas = pygame.key.get_pressed()
     botoes_mouse = pygame.mouse.get_pressed()
     pos_mouse = pygame.mouse.get_pos()
 
-    # Atualiza movimento do jogador
+    # Atualiza o movimento do jogador
     jogador.mover(teclas, largura, altura, barreira)
+
+    # Atualiza inimigos
+    for inimigo in inimigos:
+        inimigo.mover_em_direcao(jogador.rect.center)
 
     # Atirar
     if botoes_mouse[0]:
@@ -47,13 +62,25 @@ while True:
         projetil.atualizar()
         if projetil.fora_da_tela(largura, altura):
             jogador.projeteis.remove(projetil)
+        else:
+            for inimigo in inimigos[:]:
+                if projetil.rect.colliderect(inimigo.rect):
+                    inimigo.vida -= jogador.arma.dano
+                    jogador.projeteis.remove(projetil)
+                    if inimigo.vida <= 0:
+                        inimigos.remove(inimigo)
+                    break
 
-    # Desenho na tela (uma vez por frame)
+    # Desenho da cena
     tela.blit(background, (0, 0))
 
-    # Desenha jogador e vida
+    # Desenha jogador
     jogador.desenhar(tela)
     jogador.desenhar_barra_vida(tela)
+
+    # Desenha inimigos
+    for inimigo in inimigos:
+        inimigo.desenhar(tela)
 
     # Desenha projéteis
     for projetil in jogador.projeteis:
