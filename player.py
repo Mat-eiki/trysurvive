@@ -27,6 +27,11 @@ class Player:
         self.arma = Metralhadora()
         self.projeteis = []
 
+    def levar_dano(self, dano):
+        self.vida -= dano
+        if self.vida < 0:
+            self.vida = 0
+
     def mover(self, teclas, largura_tela, altura_tela, barreira):
         movendo = False
         nova_direcao = self.direcao

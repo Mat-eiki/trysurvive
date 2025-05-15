@@ -24,11 +24,7 @@ jogador = Player(650, 700)
 # Cria inimigos
 inimigos = [
     ZumbiNormal(200, 100),
-    ZumbiRapido(400, 50),
-    ZumbiTank(800, 200),
-    ZumbiBoss1(1000, 100),
-    ZumbiBoss2(1300, 400),
-    ZumbiBoss3(300, 800)
+
 ]
 
 # Define o relógio
@@ -52,6 +48,18 @@ while True:
     # Atualiza inimigos
     for inimigo in inimigos:
         inimigo.mover_em_direcao(jogador.rect.center)
+
+    # Evitar todos os danos
+    TEMPO_INVULNERAVEL = 3000  # em milissegundos (meio segundo)
+    ultimo_dano = 0
+
+    tempo_atual = pygame.time.get_ticks()
+
+    for zumbi in inimigos:
+        zumbi.mover_em_direcao(jogador.rect.center)
+        zumbi.desenhar(tela)
+
+    zumbi.tentar_atacar(jogador)
 
     # Atirar
     if botoes_mouse[0]:
