@@ -1,6 +1,7 @@
 import pygame
 import random
 from inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2
+from armas import Pistola, AK47, Metralhadora
 
 class GerenciadorOndas:
     def __init__(self, largura, altura):
@@ -16,9 +17,9 @@ class GerenciadorOndas:
 
         # Configurações das ondas
         self.config_ondas = [
-            {"intervalo": 10000, "normais": 3, "rapidos": 2, "tanks": 1},  # Nível 0
-            {"intervalo": 10000, "normais": 6, "rapidos": 4, "tanks": 2}, # Nível 1
-            {"intervalo": 10000, "normais": 14, "rapidos": 10, "tanks": 5} # Nível 2
+            {"intervalo": 20000, "normais": 3, "rapidos": 2, "tanks": 1},  # Nível 0
+            {"intervalo": 20000, "normais": 6, "rapidos": 4, "tanks": 2}, # Nível 1
+            {"intervalo": 20000, "normais": 14, "rapidos": 10, "tanks": 5} # Nível 2
         ]
 
     def gerar_posicao_entrada(self):
@@ -51,26 +52,35 @@ class GerenciadorOndas:
     def atualizar(self, jogador):
         tempo_atual = pygame.time.get_ticks()
 
-        # Gera ondas a cada X segundos
+        # Atualiza intervalo da onda atual
         intervalo = self.config_ondas[min(self.nivel_atual, len(self.config_ondas)-1)]["intervalo"]
         if tempo_atual - self.tempo_ultima_onda > intervalo:
             self.gerar_onda()
             self.tempo_ultima_onda = tempo_atual
 
-        # Boss 1 aos 60s
+        # Boss 1 aos 60s (mas só uma vez)
         if not self.boss1_spawnado and tempo_atual - self.tempo_inicial > 60000:
             x, y = self.gerar_posicao_entrada()
             self.inimigos.append(ZumbiBoss1(x, y))
             self.boss1_spawnado = True
-            self.nivel_atual = 1
 
-        # Boss 2 aos 120s (apenas se o Boss1 morreu)
-        boss1_vivo = any(isinstance(i, ZumbiBoss1) for i in self.inimigos)
-        if self.boss1_spawnado and not boss1_vivo and not self.boss2_spawnado and tempo_atual - self.tempo_inicial > 120000:
+        # Subir para nível 1 após derrotar Boss 1
+        if self.boss1_spawnado and not any(isinstance(i, ZumbiBoss1) for i in self.inimigos):
+            if self.nivel_atual < 1:
+                self.nivel_atual = 1
+                jogador.arma = AK47()
+
+# Boss 2 aos 120s (somente se Boss 1 já foi derrotado)
+        if self.nivel_atual >= 1 and not self.boss2_spawnado and tempo_atual - self.tempo_inicial > 120000:
             x, y = self.gerar_posicao_entrada()
             self.inimigos.append(ZumbiBoss2(x, y))
             self.boss2_spawnado = True
-            self.nivel_atual = 2
+
+# Subir para nível 2 após derrotar Boss 2
+        if self.boss2_spawnado and not any(isinstance(i, ZumbiBoss2) for i in self.inimigos):
+            if self.nivel_atual < 2:
+                self.nivel_atual = 2
+                jogador.arma = Metralhadora()
 
     def mover_inimigos(self, jogador):
         for inimigo in self.inimigos:

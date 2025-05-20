@@ -23,12 +23,12 @@ class Arma:
 # Instâncias das armas
 class Pistola(Arma):
     def __init__(self):
-        super().__init__(nome="Pistola", cadencia=500, dano=10)
+        super().__init__(nome="Pistola", cadencia=500, dano=20)
 
 class AK47(Arma):
     def __init__(self):
-        super().__init__(nome="AK47", cadencia=300, dano=20)
+        super().__init__(nome="AK47", cadencia=300, dano=30)
 
 class Metralhadora(Arma):
     def __init__(self):
-        super().__init__(nome="Metralhadora", cadencia=100, dano=30)
+        super().__init__(nome="Metralhadora", cadencia=100, dano=40)

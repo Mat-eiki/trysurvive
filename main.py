@@ -1,38 +1,59 @@
 import pygame
 import sys
+import json
 from player import Player
 from gerenciador_ondas import GerenciadorOndas
+from armas import Pistola, AK47, Metralhadora
 
-# Inicializa o Pygame
+#inicializa o Pygame
 pygame.init()
 
-# Define as dimensões da tela
-largura = 1536
-altura = 1024
+#fonte para o cronometro
+fonte = pygame.font.SysFont("arial", 36)
+
+#define as dimensões da tela
+info_tela = pygame.display.Info()
+largura = 1440
+altura = 800
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Trysurvive")
 
-# Carrega a imagem de fundo
+#carrega a imagem de fundo
 background = pygame.image.load("background.png")
 
-# Define uma barreira (invisível)
+#define uma barreira (invisível)
 barreira = pygame.Rect(585, 350, 235, 200)
 
-# Cria o jogador
+#cria o jogador
 jogador = Player(650, 700)
 
-# Cria o gerenciador de ondas
+#cria o gerenciador de ondas
 gerenciador = GerenciadorOndas(largura, altura)
+gerenciador.gerar_onda()
 
-# Define o relógio
+#define o relógio
 clock = pygame.time.Clock()
 
-#tela de derrota
-def mostrar_tela_derrota(tela):
+def inicializar_jogo():
+    jogador = Player(650, 700)
+    gerenciador = GerenciadorOndas(largura, altura)
+    gerenciador.gerar_onda()  # Garante a primeira onda
+    return jogador, gerenciador
+
+jogador, gerenciador = inicializar_jogo()
+
+def mostrar_tela_derrota(tela, recorde_str, tempo_atual_str):
     fonte_titulo = pygame.font.SysFont(None, 120)
     fonte_opcao = pygame.font.SysFont(None, 60)
+    fonte_menor = pygame.font.SysFont(None, 40)
+
     texto = fonte_titulo.render("VOCÊ PERDEU", True, (255, 0, 0))
+    recorde_txt = fonte_menor.render(f"Recorde: {recorde_str}", True, (255, 255, 255))
+    atual_txt = fonte_menor.render(f"Sobreviveu: {tempo_atual_str}", True, (255, 255, 255))
+
     rect_texto = texto.get_rect(center=(largura // 2, altura // 3))
+    rect_recorde = recorde_txt.get_rect(center=(largura // 2, altura // 3 + 70))
+    rect_atual = atual_txt.get_rect(center=(largura // 2, altura // 3 + 110))
 
     # Botões
     reiniciar_txt = fonte_opcao.render("Reiniciar", True, (255, 255, 255))
@@ -44,8 +65,9 @@ def mostrar_tela_derrota(tela):
     while True:
         tela.fill((0, 0, 0))
         tela.blit(texto, rect_texto)
+        tela.blit(recorde_txt, rect_recorde)
+        tela.blit(atual_txt, rect_atual)
 
-        # Desenha botões
         pygame.draw.rect(tela, (100, 0, 0), reiniciar_rect)
         pygame.draw.rect(tela, (100, 0, 0), sair_rect)
         tela.blit(reiniciar_txt, reiniciar_txt.get_rect(center=reiniciar_rect.center))
@@ -64,34 +86,69 @@ def mostrar_tela_derrota(tela):
                     pygame.quit()
                     sys.exit()
 
-# Loop principal do jogo
+#loop principal do jogo
 while True:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    # Entrada de teclado e mouse
+    #entrada de teclado e mouse
     teclas = pygame.key.get_pressed()
     botoes_mouse = pygame.mouse.get_pressed()
     pos_mouse = pygame.mouse.get_pos()
 
-    # Movimento do jogador
+    #movimento do jogador
     jogador.mover(teclas, largura, altura, barreira)
 
-    # Atualizações do jogo
+    #atualizações do jogo
     gerenciador.atualizar(jogador)
     gerenciador.mover_inimigos(jogador)
     gerenciador.verificar_colisoes(jogador.projeteis, jogador.arma.dano)
 
-    #Vida zerada verificador
+    #verificador de vida zerada
     if jogador.vida <= 0:
-        acao = mostrar_tela_derrota(tela)
+        # Calcula o tempo sobrevivido
+        tempo_final = pygame.time.get_ticks()
+        tempo_total_ms = tempo_final - gerenciador.tempo_inicial
+        tempo_total_seg = tempo_total_ms // 1000
+        minutos = tempo_total_seg // 60
+        segundos = tempo_total_seg % 60
+
+        # Verifica o recorde salvo
+        recorde_anterior = 0
+        try:
+            with open("recorde.json", "r") as f:
+                dados_salvos = json.load(f)
+                recorde_anterior = dados_salvos.get("tempo_total_segundos", 0)
+        except FileNotFoundError:
+            pass
+
+        # Salva novo recorde se for maior
+        if tempo_total_seg > recorde_anterior:
+            dados = {
+                "minutos": minutos,
+                "segundos": segundos,
+                "tempo_total_segundos": tempo_total_seg
+            }
+            with open("recorde.json", "w") as f:
+                json.dump(dados, f, indent=4)
+            recorde_str = f"{minutos:02}:{segundos:02}"
+        else:
+            recorde_min = recorde_anterior // 60
+            recorde_seg = recorde_anterior % 60
+            recorde_str = f"{recorde_min:02}:{recorde_seg:02}"
+
+        # Chama tela de derrota com o recorde
+        tempo_atual_str = f"{minutos:02}:{segundos:02}"
+        acao = mostrar_tela_derrota(tela, recorde_str, tempo_atual_str)
         if acao == "reiniciar":
-            # Reinicia o jogo recriando objetos
-            jogador = Player(650, 700)
-            gerenciador = GerenciadorOndas(largura, altura)
+            jogador, gerenciador = inicializar_jogo()
             continue
+        else:
+            pygame.quit()
+            sys.exit()
+
 
     # Atirar
     if botoes_mouse[0]:
@@ -110,6 +167,19 @@ while True:
     gerenciador.desenhar_inimigos(tela)                # Inimigos
     jogador.desenhar(tela)                             # Jogador
     jogador.desenhar_barra_vida(tela)                  # Barra de vida
+
+    # Calcula o tempo sobrevivido
+    tempo_atual = pygame.time.get_ticks()
+    segundos = (tempo_atual - gerenciador.tempo_inicial) // 1000
+    minutos = segundos // 60
+    segundos = segundos % 60
+    texto_tempo = f"{minutos:02}:{segundos:02}"
+    imagem_tempo = fonte.render(texto_tempo, True, (255, 255, 255))
+
+    # Posição no canto superior direito (com margem)
+    pos_x = largura - imagem_tempo.get_width() - 20
+    pos_y = 20  # margem superior fixa
+    tela.blit(imagem_tempo, (pos_x, pos_y))
 
     # Atualiza a tela
     pygame.display.flip()
