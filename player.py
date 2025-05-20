@@ -24,7 +24,7 @@ class Player:
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
-        self.arma = Metralhadora()
+        self.arma = Pistola()
         self.projeteis = []
 
     def levar_dano(self, dano):
