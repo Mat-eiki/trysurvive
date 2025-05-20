@@ -41,7 +41,7 @@ class ZumbiRapido(Inimigo):
 
 class ZumbiTank(Inimigo):
     def __init__(self, x, y):
-        super().__init__(x, y, vida=150, dano=20, velocidade=1, imagem_path="zumbi_tank.png", escala=3)
+        super().__init__(x, y, vida=160, dano=20, velocidade=1, imagem_path="zumbi_tank.png", escala=3)
 
 class ZumbiBoss1(Inimigo):
     def __init__(self, x, y):
@@ -53,4 +53,4 @@ class ZumbiBoss2(Inimigo):
 
 class ZumbiBoss3(Inimigo):
     def __init__(self, x, y):
-        super().__init__(x, y, vida=1200, dano=70, velocidade=2, imagem_path="zumbi_boss3.png", escala=1)
+        super().__init__(x, y, vida=6000, dano=70, velocidade=2, imagem_path="zumbi_boss3.png", escala=1)

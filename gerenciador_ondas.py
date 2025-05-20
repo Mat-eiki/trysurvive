@@ -1,6 +1,6 @@
 import pygame
 import random
-from inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2
+from inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2, ZumbiBoss3
 from armas import Pistola, AK47, Metralhadora
 
 class GerenciadorOndas:
@@ -12,6 +12,7 @@ class GerenciadorOndas:
         self.nivel_atual = 0
         self.boss1_spawnado = False
         self.boss2_spawnado = False
+        self.boss3_spawnado = False
         self.largura = largura
         self.altura = altura
 
@@ -19,7 +20,7 @@ class GerenciadorOndas:
         self.config_ondas = [
             {"intervalo": 20000, "normais": 3, "rapidos": 2, "tanks": 1},  # Nível 0
             {"intervalo": 20000, "normais": 6, "rapidos": 4, "tanks": 2}, # Nível 1
-            {"intervalo": 20000, "normais": 14, "rapidos": 10, "tanks": 5} # Nível 2
+            {"intervalo": 15000, "normais": 14, "rapidos": 10, "tanks": 5} # Nível 2
         ]
 
     def gerar_posicao_entrada(self):
@@ -81,6 +82,16 @@ class GerenciadorOndas:
             if self.nivel_atual < 2:
                 self.nivel_atual = 2
                 jogador.arma = Metralhadora()
+        
+        # Boss3 aos 180 segundos (3 minutos)
+        if self.nivel_atual >= 2 and not self.boss3_spawnado and tempo_atual - self.tempo_inicial > 180000:
+            x, y = self.gerar_posicao_entrada()
+            self.inimigos.append(ZumbiBoss3(x, y))
+            self.boss3_spawnado = True
+
+        # Detectar vitória (quando boss3 for spawnado e derrotado)
+        if self.boss3_spawnado and not any(isinstance(i, ZumbiBoss3) for i in self.inimigos):
+            return "vitoria"
 
     def mover_inimigos(self, jogador):
         for inimigo in self.inimigos:

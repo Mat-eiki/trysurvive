@@ -55,6 +55,75 @@ def mostrar_tela_derrota(tela, recorde_str, tempo_atual_str):
     rect_recorde = recorde_txt.get_rect(center=(largura // 2, altura // 3 + 70))
     rect_atual = atual_txt.get_rect(center=(largura // 2, altura // 3 + 110))
 
+    reiniciar_txt = fonte_opcao.render("Reiniciar", True, (255, 255, 255))
+    sair_txt = fonte_opcao.render("Sair", True, (255, 255, 255))
+
+    reiniciar_rect = pygame.Rect(largura // 2 - 150, altura // 2, 300, 80)
+    sair_rect = pygame.Rect(largura // 2 - 150, altura // 2 + 100, 300, 80)
+
+    while True:
+        tela.fill((0, 0, 0))
+        tela.blit(texto, rect_texto)
+        tela.blit(recorde_txt, rect_recorde)
+        tela.blit(atual_txt, rect_atual)
+
+        pygame.draw.rect(tela, (100, 0, 0), reiniciar_rect)
+        pygame.draw.rect(tela, (100, 0, 0), sair_rect)
+        tela.blit(reiniciar_txt, reiniciar_txt.get_rect(center=reiniciar_rect.center))
+        tela.blit(sair_txt, sair_txt.get_rect(center=sair_rect.center))
+
+        pygame.display.flip()
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if reiniciar_rect.collidepoint(pygame.mouse.get_pos()):
+                    return "reiniciar"
+                elif sair_rect.collidepoint(pygame.mouse.get_pos()):
+                    pygame.quit()
+                    sys.exit()
+
+def mostrar_tela_vitoria(tela, tempo_total_seg):
+    fonte_titulo = pygame.font.SysFont(None, 100)
+    fonte_texto = pygame.font.SysFont(None, 60)
+    texto = fonte_titulo.render("VOCÊ VENCEU!", True, (0, 255, 0))
+    rect_texto = texto.get_rect(center=(largura // 2, altura // 3))
+
+    tempo_str = f"Tempo: {tempo_total_seg // 60:02}:{tempo_total_seg % 60:02}"
+    tempo_txt = fonte_texto.render(tempo_str, True, (255, 255, 255))
+    rect_tempo = tempo_txt.get_rect(center=(largura // 2, altura // 3 + 100))
+
+    reiniciar_txt = fonte_texto.render("Reiniciar", True, (255, 255, 255))
+    sair_txt = fonte_texto.render("Sair", True, (255, 255, 255))
+
+    reiniciar_rect = pygame.Rect(largura // 2 - 150, altura // 2, 300, 80)
+    sair_rect = pygame.Rect(largura // 2 - 150, altura // 2 + 100, 300, 80)
+
+    while True:
+        tela.fill((0, 0, 0))
+        tela.blit(texto, rect_texto)
+        tela.blit(tempo_txt, rect_tempo)
+
+        pygame.draw.rect(tela, (0, 100, 0), reiniciar_rect)
+        pygame.draw.rect(tela, (100, 0, 0), sair_rect)
+        tela.blit(reiniciar_txt, reiniciar_txt.get_rect(center=reiniciar_rect.center))
+        tela.blit(sair_txt, sair_txt.get_rect(center=sair_rect.center))
+
+        pygame.display.flip()
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if reiniciar_rect.collidepoint(pygame.mouse.get_pos()):
+                    return "reiniciar"
+                elif sair_rect.collidepoint(pygame.mouse.get_pos()):
+                    pygame.quit()
+                    sys.exit()
+
     # Botões
     reiniciar_txt = fonte_opcao.render("Reiniciar", True, (255, 255, 255))
     sair_txt = fonte_opcao.render("Sair", True, (255, 255, 255))
@@ -102,7 +171,14 @@ while True:
     jogador.mover(teclas, largura, altura, barreira)
 
     #atualizações do jogo
-    gerenciador.atualizar(jogador)
+    resultado = gerenciador.atualizar(jogador)
+    if resultado == "vitoria":
+        tempo_final = pygame.time.get_ticks()
+        tempo_total_seg = (tempo_final - gerenciador.tempo_inicial) // 1000
+        acao = mostrar_tela_vitoria(tela, tempo_total_seg)
+        if acao == "reiniciar":
+            jogador, gerenciador = inicializar_jogo()
+            continue
     gerenciador.mover_inimigos(jogador)
     gerenciador.verificar_colisoes(jogador.projeteis, jogador.arma.dano)
 
