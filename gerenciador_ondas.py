@@ -18,8 +18,8 @@ class GerenciadorOndas:
 
         # Configurações das ondas
         self.config_ondas = [
-            {"intervalo": 20000, "normais": 3, "rapidos": 2, "tanks": 1},  # Nível 0
-            {"intervalo": 20000, "normais": 6, "rapidos": 4, "tanks": 2}, # Nível 1
+            {"intervalo": 15000, "normais": 3, "rapidos": 2, "tanks": 1},  # Nível 0
+            {"intervalo": 15000, "normais": 6, "rapidos": 4, "tanks": 2}, # Nível 1
             {"intervalo": 15000, "normais": 14, "rapidos": 10, "tanks": 5} # Nível 2
         ]
 
