@@ -197,8 +197,8 @@ while True:
             with open("recorde.json", "r") as f:
                 dados_salvos = json.load(f)
                 recorde_anterior = dados_salvos.get("tempo_total_segundos", 0)
-        except FileNotFoundError:
-            pass
+        except (FileNotFoundError, json.JSONDecodeError):
+            recorde_anterior = 0
 
         # Salva novo recorde se for maior
         if tempo_total_seg > recorde_anterior:
