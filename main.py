@@ -1,9 +1,10 @@
 import pygame
 import sys
 import json
-from player import Player
-from gerenciador_ondas import GerenciadorOndas
-from armas import Pistola, AK47, Metralhadora
+import os
+from package.player import Player
+from package.gerenciador_ondas import GerenciadorOndas
+from package.armas import Pistola, AK47, Metralhadora
 
 #inicializa o Pygame
 pygame.init()
@@ -19,7 +20,7 @@ tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Trysurvive")
 
 #carrega a imagem de fundo
-background = pygame.image.load("background.png")
+background = pygame.image.load(os.path.join("assets", "background.png"))
 
 #define uma barreira (invisível)
 barreira = pygame.Rect(585, 350, 235, 200)

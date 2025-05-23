@@ -1,6 +1,6 @@
 import pygame
 import time
-from projetil import Projetil
+from package.projetil import Projetil
 
 class Arma:
     def __init__(self, nome, cadencia, dano):

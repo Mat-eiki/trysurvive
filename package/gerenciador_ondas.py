@@ -1,7 +1,7 @@
 import pygame
 import random
-from inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2, ZumbiBoss3
-from armas import Pistola, AK47, Metralhadora
+from package.inimigos import ZumbiNormal, ZumbiRapido, ZumbiTank, ZumbiBoss1, ZumbiBoss2, ZumbiBoss3
+from package.armas import Pistola, AK47, Metralhadora
 
 class GerenciadorOndas:
     def __init__(self, largura, altura):

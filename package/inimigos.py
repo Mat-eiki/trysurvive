@@ -1,3 +1,4 @@
+import os
 import pygame
 
 class Inimigo:
@@ -5,7 +6,12 @@ class Inimigo:
         self._vida = vida
         self._dano = dano
         self._velocidade = velocidade
-        imagem_original = pygame.image.load(imagem_path).convert_alpha()
+
+        diretorio_atual = os.path.dirname(__file__)
+        caminho_completo = os.path.join(diretorio_atual, '..', 'assets', imagem_path)
+        caminho_completo = os.path.abspath(caminho_completo)
+
+        imagem_original = pygame.image.load(caminho_completo).convert_alpha()
         self._image = pygame.transform.rotozoom(imagem_original, 0, escala)
         self._pos = pygame.Vector2(x, y)
         self._rect = self._image.get_rect(center=self._pos)
