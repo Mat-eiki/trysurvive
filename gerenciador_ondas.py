@@ -102,7 +102,7 @@ class GerenciadorOndas:
         for projetil in projeteis[:]:
             for inimigo in self.inimigos[:]:
                 if projetil.rect.colliderect(inimigo.rect):
-                    inimigo.vida -= dano
+                    inimigo.levar_dano(dano)
                     projeteis.remove(projetil)
                     if inimigo.vida <= 0:
                         self.inimigos.remove(inimigo)

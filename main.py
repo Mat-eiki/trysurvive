@@ -34,6 +34,10 @@ gerenciador.gerar_onda()
 #define o relógio
 clock = pygame.time.Clock()
 
+#pause de jogo
+jogo_pausado = False
+fonte_pausa = pygame.font.SysFont("arial", 48)
+
 def inicializar_jogo():
     jogador = Player(650, 700)
     gerenciador = GerenciadorOndas(largura, altura)
@@ -124,43 +128,23 @@ def mostrar_tela_vitoria(tela, tempo_total_seg):
                     pygame.quit()
                     sys.exit()
 
-    # Botões
-    reiniciar_txt = fonte_opcao.render("Reiniciar", True, (255, 255, 255))
-    sair_txt = fonte_opcao.render("Sair", True, (255, 255, 255))
-
-    reiniciar_rect = pygame.Rect(largura // 2 - 150, altura // 2, 300, 80)
-    sair_rect = pygame.Rect(largura // 2 - 150, altura // 2 + 100, 300, 80)
-
-    while True:
-        tela.fill((0, 0, 0))
-        tela.blit(texto, rect_texto)
-        tela.blit(recorde_txt, rect_recorde)
-        tela.blit(atual_txt, rect_atual)
-
-        pygame.draw.rect(tela, (100, 0, 0), reiniciar_rect)
-        pygame.draw.rect(tela, (100, 0, 0), sair_rect)
-        tela.blit(reiniciar_txt, reiniciar_txt.get_rect(center=reiniciar_rect.center))
-        tela.blit(sair_txt, sair_txt.get_rect(center=sair_rect.center))
-
-        pygame.display.flip()
-
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif evento.type == pygame.MOUSEBUTTONDOWN:
-                if reiniciar_rect.collidepoint(pygame.mouse.get_pos()):
-                    return "reiniciar"
-                elif sair_rect.collidepoint(pygame.mouse.get_pos()):
-                    pygame.quit()
-                    sys.exit()
-
 #loop principal do jogo
 while True:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        elif evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_ESCAPE:
+                jogo_pausado = not jogo_pausado
+    
+    if jogo_pausado:
+        texto_pausa = fonte_pausa.render("Jogo pausado. Aperte ESC para continuar...", True, (255, 255, 255))
+        rect_texto = texto_pausa.get_rect(center=(largura // 2, altura // 2))
+        tela.blit(texto_pausa, rect_texto)
+        pygame.display.flip()
+        clock.tick(15)
+        continue
 
     #entrada de teclado e mouse
     teclas = pygame.key.get_pressed()
