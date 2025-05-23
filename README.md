@@ -33,8 +33,10 @@ O objetivo do jogo é testar as habilidades de sobrevivência do jogador, coloca
    pip install pygame
    
 3. Clone este repositório ou faça o download dos arquivos do jogo.
+   ```bash
+   git clone https://github.com/seu-usuario/trysurvive
 
-4. Execute o jogo:
+5. Execute o jogo:
    ```bash
    python main.py
 
