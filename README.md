@@ -54,7 +54,6 @@ O objetivo do jogo é testar as habilidades de sobrevivência do jogador, coloca
 - **Python 3** — Linguagem de programação usada para desenvolver o jogo.
 - **Pygame** — Biblioteca para desenvolvimento de jogos 2D.
 - **JSON** — Para armazenamento local do recorde do jogador.
-- **Pillow (opcional)** — Para edição e criação de assets gráficos (não obrigatório para rodar o jogo).
 
 ## Esquema UML
 ![image](https://github.com/user-attachments/assets/52eebd16-9adf-45f5-9bed-ff57361fc8ab)
